@@ -4,7 +4,7 @@ from time import time, ctime
 import threading
 import random
 
-
+errCheckarr = ["TIC", "STA", "TRY", "QUI"]
 
 # global game_on
 # game_on = False
@@ -23,53 +23,76 @@ class connThread(threading.Thread):
 
 		game_on = False
 		n = 100000
-
+		counter=10
+		#try_count = random.randint(1, 20)
 		while True:
-			data = self.conn.recv(1024)
-			data_str = data.decode().strip()
-			splitted = ["", ""]
-			if len(data_str) > 3:
-				a = data_str.split()
-				splitted[0] = a[0]
-				splitted[1] = a[1]
-			else:
-				splitted[0] = data_str
-			# if splitted[1].isdigit() == False:
-			# 	self.conn.send(b"PRR\n")
-			# 	continue
+			counter += 1
+			try:
+				# if try_count == 0:
+				# 	self.conn.send(b"YOU LOSE\n")
+				# 	try_count = random.randint(1, 20)
+				# 	game_on = False
+				# 	continue
 
-			if game_on == False:
-				if splitted[0] == "TIC":
-					self.conn.send(b"TOC\n")
-				elif splitted[0] == "STA":
-					self.conn.send(b"Oyun basliyor\n")
-					n = random.randint(1, 99)
-					game_on = True
-					continue
-				elif splitted[0] == "TRY":
-					self.conn.send(b"GRR\n")
-				# else:
-				# 	self.conn.send(b"ERR1\n")
+				#while anlayamadığım bir şekilde çift dönüyor, dönüş mesajlarımın ikincisi anlamsız oluyor. onun harici çalışıyor
 
-			elif game_on == True:
-				if splitted[0] == "TIC":
-					self.conn.send(b"TOC\n")
-				elif splitted[0] == "QUI":
-					self.conn.send(b"BYE\n")
-					game_on = False
-				elif splitted[0] == "TRY" and int(splitted[1]) < n :
-					self.conn.send(b"LTH\n")
-				elif splitted[0] == "TRY" and int(splitted[1]) > n :
-					self.conn.send(b"GTH\n")
-				elif splitted[0] == "TRY" and int(splitted[1]) == n :
-					self.conn.send(b"WIN\n")
-					n = 100000
-				# else:
-				# 	self.conn.send(b"ERR2\n")
+				data = self.conn.recv(1024)
+				data_str = data.decode().strip()
+				splitted = []
+				if len(data_str) > 3:
+					print(counter)
+					a = data_str.split()
+					splitted.append(a[0])
+					splitted.append(int(a[1]))
+					print(splitted)
+				else:
+					print(counter)
+					splitted.append(data_str)
+					print(splitted)
+				if game_on == False:
+					if splitted[0] == "TIC":
+						self.conn.send(b"TOC\n")
 
+					elif splitted[0] == "STA":
+						self.conn.send(b"RDY\n")
+						#self.conn.send(b"Remaning Try Count ->%s" % try_count)
+						n = random.randint(1, 99)
+						print("random sayi", n)
+						game_on = True
+
+					elif splitted[0] == "TRY":
+						self.conn.send(b"GRR\n")
+
+					elif splitted[0] not in errCheckarr :
+						self.conn.send(b"ERR1\n")
+
+				else:
+					if splitted[0] == "TIC":
+						self.conn.send(b"TOC\n")
+					elif splitted[0] == "QUI":
+						self.conn.send(b"BYE\n")
+						game_on = False
+					elif splitted[0] == "TRY" and splitted[1] < n :
+						self.conn.send(b"LTH\n")
+						# try_count -= 1
+						#self.conn.send(b"Remaning Try Count ->%s" % try_count)
+					elif splitted[0] == "TRY" and splitted[1] > n :
+						self.conn.send(b"GTH\n")
+						# try_count -= 1
+						#self.conn.send(b"Remaning Try Count ->%s" % try_count)
+					elif splitted[0] == "TRY" and splitted[1] == n :
+						self.conn.send(b"WIN\n")
+						# try_count -= 1
+						#self.conn.send(b"Remaning Try Count ->%s" % try_count)
+						game_on = False
+						n = 100000
+					elif splitted[0] not in errCheckarr:
+						self.conn.send(b"ERR2\n")
+			except:
+				self.conn.send(b"PRR\n")
 
 		self.conn.close()
-		print(f"Thread kapanıyor : {self.threadID} ")
+		print(f"Thread kapanıyor : {self.threadID}")
 
 s = socket.socket()
 
