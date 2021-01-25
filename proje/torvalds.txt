@@ -1,0 +1,12 @@
+LAR
+NIC torvalds:1972
+NIC torvalds:1974
+LAR
+GNL gentoo:selam
+REQ gentoo
+GNL gentoo:tekrar selam
+PRV tux:beni niye banladın?
+REQ ubuntu
+GLS ubuntu
+GNL ubuntu:hey
+KCK tux:ubuntu

@@ -1,0 +1,7 @@
+NIC kde:2020
+LAR
+REQ ubuntu
+GLS ubuntu
+NRM plasma
+GLS plasma
+CLR plasma

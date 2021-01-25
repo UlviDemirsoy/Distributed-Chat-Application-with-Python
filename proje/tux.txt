@@ -1,0 +1,12 @@
+NIC tux:herring
+NIC tux:1994
+QUI
+NIC torvald:1972 //kullanıcı olusturulunca otomatik giriş yapar cıkıs yapmak lazım
+QUI
+NIC tux:1984
+NIC tux:1994
+NRM gentoo //giriş otomatik yapılır
+KCK torvalds:gentoo 
+BAN torvalds:gentoo
+NRM ubuntu
+MKA ubuntu:torvalds  //torvalds odada olmadığı için hata dönüyor
